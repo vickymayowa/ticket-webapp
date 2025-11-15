@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 export default async function HomePage() {
   const supabase = await getSupabaseServerClient()
-  
+
   const { data: events } = await supabase
     .from('events')
     .select('*')
