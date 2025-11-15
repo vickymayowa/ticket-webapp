@@ -4,57 +4,81 @@
   --font-sans: 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
 
-  /* Event Ticketing Color System */
-  --color-primary: #6366f1;
-  --color-primary-dark: #4f46e5;
-  --color-primary-light: #818cf8;
-  --color-accent: #ec4899;
+  /* Premium Event Ticketing Color System */
+  --color-primary: #0f172a;
+  --color-primary-light: #1e293b;
+  --color-accent: #3b82f6;
+  --color-accent-dark: #1e40af;
+  --color-accent-light: #60a5fa;
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
-  --color-background: #ffffff;
-  --color-surface: #f9fafb;
-  --color-border: #e5e7eb;
-  --color-text: #111827;
-  --color-text-muted: #6b7280;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f5f9;
+  --color-border: #e2e8f0;
+  --color-border-dark: #cbd5e1;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
 }
 
 @layer base {
   body {
     @apply bg-[--color-background] text-[--color-text];
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold text-[--color-text];
+  }
 }
 
 @layer components {
   .container-tight {
-    @apply max-w-7xl mx-auto px-4;
+    @apply max-w-7xl mx-auto px-4 md:px-6;
   }
 
   .btn-primary {
-    @apply bg-[--color-primary] text-white px-4 py-2 rounded-lg font-medium hover:bg-[--color-primary-dark] transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-[--color-accent] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[--color-accent-dark] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg;
   }
 
   .btn-secondary {
-    @apply border border-[--color-border] text-[--color-text] px-4 py-2 rounded-lg font-medium hover:bg-[--color-surface] transition-colors;
+    @apply border-2 border-[--color-border] text-[--color-text] px-5 py-2.5 rounded-lg font-semibold hover:bg-[--color-surface-hover] transition-all active:scale-95;
   }
 
   .card {
-    @apply bg-white border border-[--color-border] rounded-xl p-6 shadow-sm;
+    @apply bg-[--color-surface] border border-[--color-border] rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow;
+  }
+
+  .card-premium {
+    @apply bg-[--color-surface] border border-[--color-border] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all;
   }
 
   .input-field {
-    @apply w-full border border-[--color-border] rounded-lg px-4 py-2 font-sans text-[--color-text] placeholder-[--color-text-muted] focus:outline-none focus:ring-2 focus:ring-[--color-primary] focus:border-transparent;
+    @apply w-full border-2 border-[--color-border] rounded-lg px-4 py-3 font-sans text-[--color-text] placeholder-[--color-text-muted] focus:outline-none focus:ring-2 focus:ring-[--color-accent] focus:border-transparent transition-all;
   }
 
-  /* .badge {
-    @apply inline-block px-3 py-1 rounded-full text-sm font-medium;
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
   }
 
   .badge-primary {
-    @apply badge bg-blue-100 text-blue-800;
+    @apply badge bg-blue-100 text-blue-900;
   }
 
   .badge-success {
-    @apply badge bg-green-100 text-green-800;
-  } */
+    @apply badge bg-green-100 text-green-900;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber-100 text-amber-900;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-[--color-text] mb-8;
+  }
 }

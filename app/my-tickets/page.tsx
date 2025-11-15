@@ -6,7 +6,10 @@ export default function MyTicketsPage() {
     <>
       <Header />
       <main className="container-tight py-12">
-        <h1 className="text-4xl font-bold text-[--color-text] mb-8">My Tickets</h1>
+        <div className="mb-12">
+          <h1 className="text-5xl font-bold text-[--color-text] mb-2">My Tickets</h1>
+          <p className="text-lg text-[--color-text-muted]">Your collection of upcoming and past events</p>
+        </div>
         <UserTicketsList />
       </main>
     </>
