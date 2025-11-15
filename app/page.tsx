@@ -3,7 +3,7 @@ import { EventCard } from '@/components/event-card'
 import { Header } from '@/components/header'
 import { type Event } from '@/lib/types'
 import Link from 'next/link'
-import { EventGridSkeleton } from '@/components/ui/event-skeleton'
+import { EventGridSkeleton } from '@/components/event-skeleton'
 
 export default async function HomePage() {
   const supabase = await getSupabaseServerClient()

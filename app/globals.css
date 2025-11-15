@@ -62,21 +62,21 @@
     @apply w-full border-2 border-[--color-border] rounded-lg px-4 py-3 font-sans text-[--color-text] placeholder-[--color-text-muted] focus:outline-none focus:ring-2 focus:ring-[--color-accent] focus:border-transparent transition-all;
   }
 
-  .badge {
+  /* .badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
-  }
+  } */
 
-  .badge-primary {
+  /* .badge-primary {
     @apply badge bg-blue-100 text-blue-900;
-  }
+  } */
 
-  .badge-success {
+  /* .badge-success {
     @apply badge bg-green-100 text-green-900;
-  }
+  } */
 
-  .badge-warning {
+  /* .badge-warning {
     @apply badge bg-amber-100 text-amber-900;
-  }
+  } */
 
   .section-title {
     @apply text-3xl md:text-4xl font-bold text-[--color-text] mb-8;
