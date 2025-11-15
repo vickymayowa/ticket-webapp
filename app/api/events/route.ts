@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(event)
   } catch (error) {
-    console.error('Error creating event:', error)
+    console.log('Error creating event:', error)
     return NextResponse.json(
       { error: 'Failed to create event' },
       { status: 500 }

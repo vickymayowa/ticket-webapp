@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { Ticket } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
-import { TicketsGridSkeleton } from '@/components/ui/ticket-skeleton'
+import { TicketsGridSkeleton } from '@/components/ticket-skeleton'
+import Link from 'next/link'
 
 interface TicketWithEvent extends Ticket {
   event?: {
@@ -48,7 +49,7 @@ export function UserTicketsList() {
             Start your journey by booking tickets to amazing events
           </p>
           <Button className="btn-primary px-8 py-3">
-            <a href="/">Browse Events</a>
+            <Link href="/">Browse Events</Link>
           </Button>
         </div>
       ) : (

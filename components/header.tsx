@@ -18,7 +18,7 @@ export function Header() {
             <span className="text-xs text-[--color-text-muted] font-medium">Book Your Next Experience</span>
           </div>
         </Link>
-
+        
         <nav className="hidden md:flex items-center gap-8">
           <Link href="/" className="text-[--color-text] hover:text-[--color-accent] font-medium transition-colors">
             Explore Events

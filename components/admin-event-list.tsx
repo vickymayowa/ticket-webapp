@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { Event } from '@/lib/types'
 import { formatDate, formatCurrency } from '@/lib/utils-server'
 import { Button } from '@/components/ui/button'
-import { AdminEventListSkeleton } from '@/components/ui/admin-event-skeleton'
+import { AdminEventListSkeleton } from '@/components/admin-event-skeleton'
 
 export function AdminEventList() {
   const [events, setEvents] = useState<Event[]>([])

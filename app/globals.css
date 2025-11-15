@@ -3,28 +3,11 @@
 @theme inline {
   --font-sans: 'Geist', 'Geist Fallback';
   --font-mono: 'Geist Mono', 'Geist Mono Fallback';
-
-  /* Premium Event Ticketing Color System */
-  --color-primary: #0f172a;
-  --color-primary-light: #1e293b;
-  --color-accent: #3b82f6;
-  --color-accent-dark: #1e40af;
-  --color-accent-light: #60a5fa;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-  --color-surface-hover: #f1f5f9;
-  --color-border: #e2e8f0;
-  --color-border-dark: #cbd5e1;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
 }
 
 @layer base {
   body {
-    @apply bg-[--color-background] text-[--color-text];
+    @apply bg-white text-slate-900;
   }
 
   h1,
@@ -33,7 +16,7 @@
   h4,
   h5,
   h6 {
-    @apply font-bold text-[--color-text];
+    @apply font-bold text-slate-900;
   }
 }
 
@@ -43,42 +26,42 @@
   }
 
   .btn-primary {
-    @apply bg-[--color-accent] text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-[--color-accent-dark] active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg;
+    @apply bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-blue-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg;
   }
 
   .btn-secondary {
-    @apply border-2 border-[--color-border] text-[--color-text] px-5 py-2.5 rounded-lg font-semibold hover:bg-[--color-surface-hover] transition-all active:scale-95;
+    @apply border-2 border-slate-200 text-slate-900 px-5 py-2.5 rounded-lg font-semibold hover:bg-slate-50 transition-all active:scale-95;
   }
 
   .card {
-    @apply bg-[--color-surface] border border-[--color-border] rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow;
+    @apply bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow;
   }
 
   .card-premium {
-    @apply bg-[--color-surface] border border-[--color-border] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all;
+    @apply bg-white border border-slate-200 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all;
   }
 
   .input-field {
-    @apply w-full border-2 border-[--color-border] rounded-lg px-4 py-3 font-sans text-[--color-text] placeholder-[--color-text-muted] focus:outline-none focus:ring-2 focus:ring-[--color-accent] focus:border-transparent transition-all;
+    @apply w-full border-2 border-slate-200 rounded-lg px-4 py-3 font-sans text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all;
   }
 
   /* .badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
-  } */
+  }
 
-  /* .badge-primary {
+  .badge-primary {
     @apply badge bg-blue-100 text-blue-900;
-  } */
+  }
 
-  /* .badge-success {
+  .badge-success {
     @apply badge bg-green-100 text-green-900;
-  } */
+  }
 
-  /* .badge-warning {
+  .badge-warning {
     @apply badge bg-amber-100 text-amber-900;
   } */
 
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-[--color-text] mb-8;
+    @apply text-3xl md:text-4xl font-bold text-slate-900 mb-8;
   }
 }

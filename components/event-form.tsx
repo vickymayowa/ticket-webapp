@@ -70,12 +70,10 @@ export function EventForm() {
           price: 5000,
         })
         router.refresh()
-      } else {
-        alert('Failed to create event')
       }
+      console.log(response)
     } catch (error) {
-      console.error('Error creating event:', error)
-      alert('An error occurred')
+      console.log('Error creating event:', error)
     } finally {
       setLoading(false)
     }
