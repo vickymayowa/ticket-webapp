@@ -8,12 +8,13 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
 
-export default function Page() {
+export default function SignupPage() {
     const [firstName, setFirstName] = useState('')
     const [lastName, setLastName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [role, setRole] = useState<'organizer' | 'user'>('user')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const { signUp } = useAuth()
@@ -36,7 +37,7 @@ export default function Page() {
         setLoading(true)
 
         try {
-            await signUp(email, password, firstName, lastName)
+            await signUp(email, password, firstName, lastName, role)
             router.push('/')
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to sign up')
@@ -59,7 +60,7 @@ export default function Page() {
                     <div className="bg-white rounded-2xl shadow-xl p-8">
                         <div className="mb-8">
                             <h1 className="text-3xl font-bold text-slate-900 mb-2">Create account</h1>
-                            <p className="text-slate-600">Join EventHub to book amazing events</p>
+                            <p className="text-slate-600">Join EventHub today</p>
                         </div>
 
                         {error && (
@@ -138,6 +139,43 @@ export default function Page() {
                                     required
                                     className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
                                 />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-3">
+                                    Account Type
+                                </label>
+                                <div className="space-y-2">
+                                    <label className="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 transition-colors" style={{ borderColor: role === 'user' ? '#2563eb' : undefined }}>
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value="user"
+                                            checked={role === 'user'}
+                                            onChange={(e) => setRole(e.target.value as 'user')}
+                                            className="w-4 h-4 accent-blue-600"
+                                        />
+                                        <div className="ml-3 flex-1">
+                                            <span className="font-medium text-slate-900">Ticket Buyer</span>
+                                            <p className="text-xs text-slate-600">Browse and buy tickets to events</p>
+                                        </div>
+                                    </label>
+
+                                    <label className="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 transition-colors" style={{ borderColor: role === 'organizer' ? '#2563eb' : undefined }}>
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value="organizer"
+                                            checked={role === 'organizer'}
+                                            onChange={(e) => setRole(e.target.value as 'organizer')}
+                                            className="w-4 h-4 accent-blue-600"
+                                        />
+                                        <div className="ml-3 flex-1">
+                                            <span className="font-medium text-slate-900">Event Organizer</span>
+                                            <p className="text-xs text-slate-600">Create and manage your events</p>
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
 
                             <Button
