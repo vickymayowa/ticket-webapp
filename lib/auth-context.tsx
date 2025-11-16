@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = getSupabaseClient()
 
     useEffect(() => {
+        // Check if user is already logged in
         const checkUser = async () => {
             try {
                 const { data: { user: authUser } } = await supabase.auth.getUser()
@@ -44,6 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         checkUser()
 
+        // Subscribe to auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (session?.user) {
                 const { data: userData } = await supabase
@@ -90,7 +92,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     const signIn = async (email: string, password: string) => {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        })
+
         if (error) throw error
     }
 
@@ -100,18 +106,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(null)
     }
 
-
     return (
         <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut }}>
             {children}
         </AuthContext.Provider>
     )
-    //     return (
-    //         <AuthContext.Provider value= {{ user, loading, signUp, signIn, signOut }
-    // }>
-    //     { children }
-    //     </AuthContext.Provider>
-    //     )
 }
 
 export function useAuth() {

@@ -2,35 +2,82 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+import { useAuth } from '@/lib/auth-context'
+import { LogOut, TicketIcon } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export function Header() {
+  const { user, signOut } = useAuth()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      router.push('/')
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+  }
+
   return (
-    <header className="bg-[--color-surface] border-b border-[--color-border] sticky top-0 z-50 shadow-sm">
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
       <div className="container-tight py-5 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-[--color-accent] to-[--color-accent-dark] rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-md">
             ✨
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-bold text-[--color-text] group-hover:text-[--color-accent] transition-colors">
+            <span className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors">
               EventHub
             </span>
-            <span className="text-xs text-[--color-text-muted] font-medium">Book Your Next Experience</span>
+            <span className="text-xs text-slate-500 font-medium">Book Events</span>
           </div>
         </Link>
-        
+
         <nav className="hidden md:flex items-center gap-8">
-          <Link href="/" className="text-[--color-text] hover:text-[--color-accent] font-medium transition-colors">
+          <Link href="/" className="text-slate-700 hover:text-blue-600 font-medium transition-colors">
             Explore Events
           </Link>
-          <Link href="/my-tickets" className="text-[--color-text] hover:text-[--color-accent] font-medium transition-colors">
-            My Tickets
-          </Link>
+          {user && (
+            <Link href="/my-tickets" className="text-slate-700 hover:text-blue-600 font-medium transition-colors flex items-center gap-2">
+              <TicketIcon className="w-4 h-4" />
+              My Tickets
+            </Link>
+          )}
         </nav>
 
-        <Link href="/admin">
-          <Button className="btn-primary">Create Event</Button>
-        </Link>
+        <div className="flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-2 text-slate-700">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
+                  {user.first_name?.[0] || user.email[0].toUpperCase()}
+                </div>
+                <span className="text-sm font-medium">{user.first_name || user.email}</span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden md:inline">Logout</span>
+              </button>
+            </div>
+          ) : (
+            <>
+              <Link href="/auth/login">
+                <Button variant="outline" className="hidden md:inline-flex">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/auth/signup">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  Sign Up
+                </Button>
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </header>
   )
