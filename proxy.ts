@@ -4,25 +4,21 @@ import { createServerClient } from '@supabase/ssr'
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
-    // Protect admin routes
     if (pathname.startsWith('/admin')) {
-        let supabase = createServerClient(
+        const response = NextResponse.next()
+
+        const supabase = createServerClient(
             process.env.NEXT_PUBLIC_SUPABASE_URL!,
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
             {
                 cookies: {
                     getAll() {
-                        return request.cookies.getSetCookie().map(cookie => {
-                            const [name, ...rest] = cookie.split('=')
-                            return { name, value: rest.join('=') }
-                        })
+                        return request.cookies.getAll()
                     },
                     setAll(cookiesToSet) {
-                        let response = NextResponse.next()
                         cookiesToSet.forEach(({ name, value, options }) =>
                             response.cookies.set(name, value, options)
                         )
-                        return response
                     },
                 },
             }
@@ -47,6 +43,8 @@ export async function proxy(request: NextRequest) {
         if (!userData?.is_admin) {
             return NextResponse.redirect(new URL('/?unauthorized=true', request.url))
         }
+
+        return response
     }
 
     return NextResponse.next()
