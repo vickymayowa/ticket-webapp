@@ -40,6 +40,7 @@ export default function SignupPage() {
             await signUp(email, password, firstName, lastName, role)
             router.push('/')
         } catch (err) {
+            console.log(err)
             setError(err instanceof Error ? err.message : 'Failed to sign up')
         } finally {
             setLoading(false)

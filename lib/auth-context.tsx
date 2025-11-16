@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const checkUser = async () => {
             try {
                 const { data: { user: authUser } } = await supabase.auth.getUser()
-
                 if (authUser) {
                     const { data: userData } = await supabase
                         .from('users')
@@ -36,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     }
                 }
             } catch (error) {
-                console.log("[v0] Auth check error:", error)
+                console.log("Auth check error:", error)
             } finally {
                 setLoading(false)
             }

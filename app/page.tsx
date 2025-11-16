@@ -128,7 +128,7 @@ export default async function HomePage() {
               Events Happening Now
             </h2>
             <p className="text-lg text-slate-600 max-w-2xl leading-relaxed">
-              Handpicked events from around the world. Don't miss out on tickets to your next favorite experience.
+              Handpicked events from around the world. Dont miss out on tickets to your next favorite experience.
             </p>
           </div>
 
@@ -155,7 +155,7 @@ export default async function HomePage() {
 
           <div className="container-tight relative z-10 text-center space-y-8">
             <div className="space-y-4">
-              <h2 className="text-5xl md:text-6xl font-bold text-balance leading-tight">
+              <h2 className="text-5xl md:text-6xl font-bold text-white leading-tight">
                 Ready to Host Your Event?
               </h2>
               <p className="text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
