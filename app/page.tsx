@@ -37,7 +37,7 @@ export default async function HomePage() {
 
                 {/* Heading */}
                 <div className="space-y-4">
-                  <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-balance">
+                  <h1 className="text-6xl md:text-6xl lg:text-7xl font-bold leading-tight text-white">
                     Find Your Next
                     <br />
                     <span className="bg-gradient-to-r from-blue-300 via-blue-200 to-cyan-200 bg-clip-text text-transparent">Unforgettable Event</span>
