@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
 
-    if (pathname.startsWith('/admin')) {
+    if (pathname.startsWith('/organizer')) {
         const response = NextResponse.next()
 
         const supabase = createServerClient(
@@ -28,19 +28,17 @@ export async function proxy(request: NextRequest) {
             data: { user },
         } = await supabase.auth.getUser()
 
-        // If no user, redirect to login
         if (!user) {
             return NextResponse.redirect(new URL('/auth/login', request.url))
         }
 
-        // Check if user is admin
         const { data: userData } = await supabase
             .from('users')
-            .select('is_admin')
+            .select('role')
             .eq('id', user.id)
             .single()
 
-        if (!userData?.is_admin) {
+        if (userData?.role !== 'organizer' && userData?.role !== 'admin') {
             return NextResponse.redirect(new URL('/?unauthorized=true', request.url))
         }
 
@@ -51,5 +49,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/admin/:path*'],
+    matcher: ['/organizer/:path*'],
 }

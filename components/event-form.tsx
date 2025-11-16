@@ -70,10 +70,13 @@ export function EventForm() {
           price: 5000,
         })
         router.refresh()
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Failed to create event')
       }
-      console.log(response)
     } catch (error) {
-      console.log('Error creating event:', error)
+      console.error('Error creating event:', error)
+      alert('An error occurred')
     } finally {
       setLoading(false)
     }
@@ -82,9 +85,8 @@ export function EventForm() {
   return (
     <div className="card-premium max-w-3xl">
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Title */}
         <div>
-          <Label htmlFor="title" className="text-base font-semibold text-[--color-text] mb-2 block">Event Title</Label>
+          <Label htmlFor="title" className="text-base font-semibold text-slate-900 mb-2 block">Event Title</Label>
           <Input
             id="title"
             name="title"
@@ -96,9 +98,8 @@ export function EventForm() {
           />
         </div>
 
-        {/* Description */}
         <div>
-          <Label htmlFor="description" className="text-base font-semibold text-[--color-text] mb-2 block">Description</Label>
+          <Label htmlFor="description" className="text-base font-semibold text-slate-900 mb-2 block">Description</Label>
           <Textarea
             id="description"
             name="description"
@@ -110,10 +111,9 @@ export function EventForm() {
           />
         </div>
 
-        {/* Category and Location */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label htmlFor="category" className="text-base font-semibold text-[--color-text] mb-2 block">Category</Label>
+            <Label htmlFor="category" className="text-base font-semibold text-slate-900 mb-2 block">Category</Label>
             <select
               id="category"
               name="category"
@@ -132,7 +132,7 @@ export function EventForm() {
           </div>
 
           <div>
-            <Label htmlFor="location" className="text-base font-semibold text-[--color-text] mb-2 block">Location</Label>
+            <Label htmlFor="location" className="text-base font-semibold text-slate-900 mb-2 block">Location</Label>
             <Input
               id="location"
               name="location"
@@ -145,9 +145,8 @@ export function EventForm() {
           </div>
         </div>
 
-        {/* Image URL */}
         <div>
-          <Label htmlFor="image_url" className="text-base font-semibold text-[--color-text] mb-2 block">Image URL</Label>
+          <Label htmlFor="image_url" className="text-base font-semibold text-slate-900 mb-2 block">Image URL</Label>
           <Input
             id="image_url"
             name="image_url"
@@ -159,10 +158,9 @@ export function EventForm() {
           />
         </div>
 
-        {/* Date and Time */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label htmlFor="start_date" className="text-base font-semibold text-[--color-text] mb-2 block">Start Date & Time</Label>
+            <Label htmlFor="start_date" className="text-base font-semibold text-slate-900 mb-2 block">Start Date & Time</Label>
             <Input
               id="start_date"
               name="start_date"
@@ -175,7 +173,7 @@ export function EventForm() {
           </div>
 
           <div>
-            <Label htmlFor="end_date" className="text-base font-semibold text-[--color-text] mb-2 block">End Date & Time</Label>
+            <Label htmlFor="end_date" className="text-base font-semibold text-slate-900 mb-2 block">End Date & Time</Label>
             <Input
               id="end_date"
               name="end_date"
@@ -188,10 +186,9 @@ export function EventForm() {
           </div>
         </div>
 
-        {/* Tickets and Price */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label htmlFor="total_tickets" className="text-base font-semibold text-[--color-text] mb-2 block">Total Tickets</Label>
+            <Label htmlFor="total_tickets" className="text-base font-semibold text-slate-900 mb-2 block">Total Tickets</Label>
             <Input
               id="total_tickets"
               name="total_tickets"
@@ -205,7 +202,7 @@ export function EventForm() {
           </div>
 
           <div>
-            <Label htmlFor="price" className="text-base font-semibold text-[--color-text] mb-2 block">Price per Ticket (₦)</Label>
+            <Label htmlFor="price" className="text-base font-semibold text-slate-900 mb-2 block">Price per Ticket (₦)</Label>
             <Input
               id="price"
               name="price"

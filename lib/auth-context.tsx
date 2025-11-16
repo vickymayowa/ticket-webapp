@@ -7,7 +7,7 @@ import type { User } from '@/lib/types'
 interface AuthContextType {
     user: User | null
     loading: boolean
-    signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<void>
+    signUp: (email: string, password: string, firstName: string, lastName: string, role: 'organizer' | 'user') => Promise<void>
     signIn: (email: string, password: string) => Promise<void>
     signOut: () => Promise<void>
 }
@@ -20,7 +20,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const supabase = getSupabaseClient()
 
     useEffect(() => {
-        // Check if user is already logged in
         const checkUser = async () => {
             try {
                 const { data: { user: authUser } } = await supabase.auth.getUser()
@@ -45,7 +44,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         checkUser()
 
-        // Subscribe to auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (session?.user) {
                 const { data: userData } = await supabase
@@ -65,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return () => subscription?.unsubscribe()
     }, [supabase])
 
-    const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
+    const signUp = async (email: string, password: string, firstName: string, lastName: string, role: 'organizer' | 'user' = 'user') => {
         const { data, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -84,7 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     email,
                     first_name: firstName,
                     last_name: lastName,
-                    is_admin: false,
+                    is_admin: role === 'admin',
+                    role: role,
                 }])
 
             if (userError) throw userError

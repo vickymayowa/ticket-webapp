@@ -38,6 +38,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (userData?.role !== 'organizer' && userData?.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Only organizers can create events' },
+        { status: 403 }
+      )
+    }
+
     const { title, description, category, location, image_url, start_date, end_date, total_tickets, price } = body
 
     if (!title || !location || !start_date || !end_date || !total_tickets || !price) {
@@ -71,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(event)
   } catch (error) {
-    console.log('Error creating event:', error)
+    console.error('Error creating event:', error)
     return NextResponse.json(
       { error: 'Failed to create event' },
       { status: 500 }

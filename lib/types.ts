@@ -1,3 +1,5 @@
+// Shared types for the application
+
 export interface Event {
   id: string;
   title: string;
@@ -22,6 +24,7 @@ export interface User {
   last_name: string | null;
   phone: string | null;
   is_admin: boolean;
+  role: 'admin' | 'organizer' | 'user';
   created_at: string;
 }
 

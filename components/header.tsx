@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth-context'
-import { LogOut, TicketIcon } from 'lucide-react'
+import { LogOut, TicketIcon, Briefcase } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export function Header() {
@@ -39,10 +39,18 @@ export function Header() {
             Explore Events
           </Link>
           {user && (
-            <Link href="/my-tickets" className="text-slate-700 hover:text-blue-600 font-medium transition-colors flex items-center gap-2">
-              <TicketIcon className="w-4 h-4" />
-              My Tickets
-            </Link>
+            <>
+              <Link href="/my-tickets" className="text-slate-700 hover:text-blue-600 font-medium transition-colors flex items-center gap-2">
+                <TicketIcon className="w-4 h-4" />
+                My Tickets
+              </Link>
+              {(user.role === 'organizer' || user.role === 'admin') && (
+                <Link href="/organizer" className="text-slate-700 hover:text-blue-600 font-medium transition-colors flex items-center gap-2">
+                  <Briefcase className="w-4 h-4" />
+                  Dashboard
+                </Link>
+              )}
+            </>
           )}
         </nav>
 
@@ -53,7 +61,10 @@ export function Header() {
                 <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600">
                   {user.first_name?.[0] || user.email[0].toUpperCase()}
                 </div>
-                <span className="text-sm font-medium">{user.first_name || user.email}</span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{user.first_name || user.email}</span>
+                  <span className="text-xs text-slate-500 capitalize">{user.role}</span>
+                </div>
               </div>
               <button
                 onClick={handleLogout}
