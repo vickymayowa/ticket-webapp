@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { getSupabaseClient } from './supabase'
+import { getSupabaseClient } from '@/lib/supabase'
 import type { User } from '@/lib/types'
 
 interface AuthContextType {
@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         checkUser()
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (session: any) => {
             if (session?.user) {
                 const { data: userData } = await supabase
                     .from('users')

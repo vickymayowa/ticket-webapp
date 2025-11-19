@@ -25,6 +25,11 @@ export interface User {
   phone: string | null;
   is_admin: boolean;
   role: 'admin' | 'organizer' | 'user';
+  paystack_subaccount_code: string | null;
+  paystack_subaccount_id: string | null;
+  paystack_bank_account: string | null;
+  paystack_account_name: string | null;
+  virtual_account_created_at: string | null;
   created_at: string;
 }
 
@@ -45,8 +50,11 @@ export interface Order {
   id: string;
   user_id: string;
   event_id: string;
+  organizer_id: string;
   amount: number;
   quantity: number;
+  commission_amount: number | null;
+  organizer_amount: number | null;
   reference: string | null;
   status: 'pending' | 'completed' | 'failed';
   payment_method: string;

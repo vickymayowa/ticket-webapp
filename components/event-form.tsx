@@ -7,6 +7,9 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useRouter } from 'next/navigation'
 import { Spinner } from '@/components/ui/spinner'
+import { uploadEventImage } from '@/lib/storage-service'
+import { Upload, X } from 'lucide-react'
+import Image from 'next/image'
 
 interface EventFormData {
   title: string
@@ -22,6 +25,8 @@ interface EventFormData {
 
 export function EventForm() {
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [imagePreview, setImagePreview] = useState<string>('')
   const router = useRouter()
   const [formData, setFormData] = useState<EventFormData>({
     title: '',
@@ -43,6 +48,42 @@ export function EventForm() {
       ...formData,
       [name]: type === 'number' ? parseFloat(value) : value,
     })
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB')
+      return
+    }
+
+    setUploading(true)
+    try {
+      const imageUrl = await uploadEventImage(file)
+      if (imageUrl) {
+        setFormData({ ...formData, image_url: imageUrl })
+        setImagePreview(URL.createObjectURL(file))
+      } else {
+        alert('Failed to upload image')
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Error uploading image')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleRemoveImage = () => {
+    setFormData({ ...formData, image_url: '' })
+    setImagePreview('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,6 +110,7 @@ export function EventForm() {
           total_tickets: 100,
           price: 5000,
         })
+        setImagePreview('')
         router.refresh()
       } else {
         const error = await response.json()
@@ -146,16 +188,52 @@ export function EventForm() {
         </div>
 
         <div>
-          <Label htmlFor="image_url" className="text-base font-semibold text-slate-900 mb-2 block">Image URL</Label>
-          <Input
-            id="image_url"
-            name="image_url"
-            value={formData.image_url}
-            onChange={handleChange}
-            placeholder="https://example.com/image.jpg"
-            type="url"
-            className="input-field"
-          />
+          <Label htmlFor="image" className="text-base font-semibold text-slate-900 mb-2 block">Event Image</Label>
+          {imagePreview ? (
+            <div className="relative w-full h-64 rounded-lg overflow-hidden border-2 border-slate-200">
+              <Image
+                src={imagePreview || "/placeholder.svg"}
+                alt="Event preview"
+                fill
+                className="object-cover"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="relative">
+              <input
+                id="image"
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="hidden"
+              />
+              <label
+                htmlFor="image"
+                className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-slate-300 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-slate-50 transition-all"
+              >
+                {uploading ? (
+                  <div className="flex flex-col items-center gap-3">
+                    <Spinner className="w-8 h-8 text-blue-600" />
+                    <p className="text-sm font-medium text-slate-600">Uploading image...</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-3">
+                    <Upload className="w-12 h-12 text-slate-400" />
+                    <p className="text-sm font-medium text-slate-600">Click to upload event image</p>
+                    <p className="text-xs text-slate-500">PNG, JPG up to 5MB</p>
+                  </div>
+                )}
+              </label>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -219,7 +297,7 @@ export function EventForm() {
 
         <Button
           type="submit"
-          disabled={loading}
+          disabled={loading || uploading}
           className="w-full btn-primary py-4 text-base"
         >
           <span className="flex items-center justify-center gap-2">

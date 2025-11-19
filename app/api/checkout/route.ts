@@ -1,5 +1,6 @@
 import { getSupabaseServerClient } from '@/lib/supabase-server'
 import { NextRequest, NextResponse } from 'next/server'
+import { initializePaymentWithSplit } from '@/lib/paystack-service'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
 const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
@@ -40,7 +41,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const totalAmount = event.price * quantity * 100 // Convert to kobo
+    const { data: organizer } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', event.created_by)
+      .single()
+
+    if (!organizer) {
+      return NextResponse.json(
+        { error: 'Event organizer not found' },
+        { status: 404 }
+      )
+    }
+
+    const totalAmount = event.price * quantity
 
     const { data: existingUser } = await supabase
       .from('users')
@@ -59,6 +73,7 @@ export async function POST(request: NextRequest) {
             email: user.email,
             first_name: user.user_metadata?.first_name || '',
             last_name: user.user_metadata?.last_name || '',
+            role: 'user',
           },
         ])
         .select('id')
@@ -73,7 +88,8 @@ export async function POST(request: NextRequest) {
         {
           user_id: userId,
           event_id,
-          amount: event.price * quantity,
+          organizer_id: event.created_by,
+          amount: totalAmount,
           quantity,
           status: 'pending',
         },
@@ -85,38 +101,40 @@ export async function POST(request: NextRequest) {
       throw new Error('Failed to create order')
     }
 
-    const paystackPayload = {
-      email: user.email,
-      amount: totalAmount,
-      metadata: {
+    if (!user?.email) {
+      return NextResponse.json(
+        { error: "User email is required for checkout" },
+        { status: 400 }
+      );
+    }
+    const COMMISSION_RATE = 5 // 5% platform commission
+    const paystackResponse = await initializePaymentWithSplit(
+      user.email,
+      Math.round(totalAmount * 100), // Convert to kobo
+      {
         order_id: order.id,
         event_id,
         quantity,
-      },
-    }
+        organizer_subaccount_code: organizer.paystack_subaccount_code || '',
+        commission_rate: COMMISSION_RATE,
+      }
+    )
 
-    const paystackResponse = await fetch('https://api.paystack.co/transaction/initialize', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-      },
-      body: JSON.stringify(paystackPayload),
-    })
-
-    const paystackData = await paystackResponse.json()
-
-    if (!paystackData.status) {
-      throw new Error('Paystack initialization failed')
-    }
+    await supabase
+      .from('orders')
+      .update({
+        commission_amount: paystackResponse.commission_amount / 100,
+        organizer_amount: paystackResponse.organizer_amount / 100,
+      })
+      .eq('id', order.id)
 
     return NextResponse.json({
-      authorization_url: paystackData.data.authorization_url,
-      access_code: paystackData.data.access_code,
-      reference: paystackData.data.reference,
+      authorization_url: paystackResponse.authorization_url,
+      access_code: paystackResponse.access_code,
+      reference: paystackResponse.reference,
     })
   } catch (error) {
-    console.error('Checkout error:', error)
+    console.error('[v0] Checkout error:', error)
     return NextResponse.json(
       { error: 'Failed to initialize checkout' },
       { status: 500 }

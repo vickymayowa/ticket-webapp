@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth-context'
-import { LogOut, TicketIcon, Briefcase } from 'lucide-react'
+import { LogOut, TicketIcon, Briefcase, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 export function Header() {
@@ -43,6 +43,10 @@ export function Header() {
               <Link href="/my-tickets" className="text-slate-700 hover:text-blue-600 font-medium transition-colors flex items-center gap-2">
                 <TicketIcon className="w-4 h-4" />
                 My Tickets
+              </Link>
+              <Link href="/profile" className="text-slate-700 hover:text-blue-600 font-medium transition-colors flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Profile
               </Link>
               {(user.role === 'organizer' || user.role === 'admin') && (
                 <Link href="/organizer" className="text-slate-700 hover:text-blue-600 font-medium transition-colors flex items-center gap-2">

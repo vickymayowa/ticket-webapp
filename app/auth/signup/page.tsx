@@ -15,6 +15,9 @@ export default function SignupPage() {
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [role, setRole] = useState<'organizer' | 'user'>('user')
+    const [bankCode, setBankCode] = useState('')
+    const [accountNumber, setAccountNumber] = useState('')
+    const [businessName, setBusinessName] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const { signUp } = useAuth()
@@ -34,10 +37,25 @@ export default function SignupPage() {
             return
         }
 
+        if (role === 'organizer') {
+            if (!bankCode || !accountNumber || !businessName) {
+                setError('Please provide bank details to create a virtual account')
+                return
+            }
+            if (accountNumber.length < 10) {
+                setError('Please provide a valid account number')
+                return
+            }
+        }
+
         setLoading(true)
 
         try {
-            await signUp(email, password, firstName, lastName, role)
+            await signUp(email, password, firstName, lastName, role, {
+                bankCode,
+                accountNumber,
+                businessName,
+            })
             router.push('/')
         } catch (err) {
             console.log(err)
@@ -178,6 +196,57 @@ export default function SignupPage() {
                                     </label>
                                 </div>
                             </div>
+
+                            {role === 'organizer' && (
+                                <>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                                            Business Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={businessName}
+                                            onChange={(e) => setBusinessName(e.target.value)}
+                                            placeholder="Your Event Business"
+                                            className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                                        />
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Bank Code
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={bankCode}
+                                                onChange={(e) => setBankCode(e.target.value)}
+                                                placeholder="e.g., 058"
+                                                className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Account Number
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={accountNumber}
+                                                onChange={(e) => setAccountNumber(e.target.value)}
+                                                placeholder="0123456789"
+                                                className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                                        <p className="text-xs text-blue-700">
+                                            Your virtual account will be created during signup to receive payments from ticket sales directly.
+                                        </p>
+                                    </div>
+                                </>
+                            )}
 
                             <Button
                                 type="submit"

@@ -1,5 +1,6 @@
 import { EventForm } from '@/components/event-form'
 import { AdminEventList } from '@/components/admin-event-list'
+import { OrganizerSalesView } from '@/components/organizer-sales-view'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function OrganizerPage() {
@@ -18,6 +19,9 @@ export default function OrganizerPage() {
           <TabsTrigger value="manage" className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 px-0">
             <span className="text-base font-semibold">Manage Events</span>
           </TabsTrigger>
+          <TabsTrigger value="sales" className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-600 px-0">
+            <span className="text-base font-semibold">Sales & Analytics</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="create" className="mt-8">
@@ -26,6 +30,10 @@ export default function OrganizerPage() {
 
         <TabsContent value="manage" className="mt-8">
           <AdminEventList />
+        </TabsContent>
+
+        <TabsContent value="sales" className="mt-8">
+          <OrganizerSalesView />
         </TabsContent>
       </Tabs>
     </div>
