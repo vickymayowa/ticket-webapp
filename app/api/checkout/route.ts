@@ -115,11 +115,11 @@ export async function POST(request: NextRequest) {
         order_id: order.id,
         event_id,
         quantity,
-        organizer_subaccount_code: organizer.paystack_subaccount_code || '',
+        organizer_subaccount_code: organizer.paystack_subaccount_code,
         commission_rate: COMMISSION_RATE,
       }
     )
-
+    console.log(paystackResponse)
     await supabase
       .from('orders')
       .update({
