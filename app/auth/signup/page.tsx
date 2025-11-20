@@ -1,54 +1,69 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/lib/auth-context'
-import { Button } from '@/components/ui/button'
-import { ArrowLeft } from 'lucide-react'
-import { Spinner } from '@/components/ui/spinner'
+import type React from "react"
 
-export default function SignupPage() {
-    const [firstName, setFirstName] = useState('')
-    const [lastName, setLastName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
-    const [role, setRole] = useState<'organizer' | 'user'>('user')
-    const [bankCode, setBankCode] = useState('')
-    const [accountNumber, setAccountNumber] = useState('')
-    const [businessName, setBusinessName] = useState('')
-    const [error, setError] = useState('')
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth-context"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Loader2 } from "lucide-react"
+import { Spinner } from "@/components/ui/spinner"
+import usePaystackAutoResolve from "@/hooks/usePaystackAutoResolve"
+
+export default function page() {
+    const [firstName, setFirstName] = useState("")
+    const [lastName, setLastName] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [role, setRole] = useState<"organizer" | "user">("user")
+    const [accountNumber, setAccountNumber] = useState("")
+    const [businessName, setBusinessName] = useState("")
+    const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
     const { signUp } = useAuth()
     const router = useRouter()
 
+    const { loading: fetchingBankDetails, error: bankError, bankCode, accountName, resolve } = usePaystackAutoResolve()
+
+    useEffect(() => {
+        if (!accountNumber || accountNumber.length < 10) {
+            return
+        }
+
+        const fetchBankDetails = async () => {
+            await resolve(accountNumber)
+        }
+
+        const timer = setTimeout(fetchBankDetails, 100)
+        return () => clearTimeout(timer)
+    }, [accountNumber, resolve])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setError('')
+        setError("")
 
         if (password !== confirmPassword) {
-            setError('Passwords do not match')
+            setError("Passwords do not match")
             return
         }
 
         if (password.length < 6) {
-            setError('Password must be at least 6 characters')
+            setError("Password must be at least 6 characters")
             return
         }
 
-        if (role === 'organizer') {
+        if (role === "organizer") {
             if (!bankCode || !accountNumber || !businessName) {
-                setError('Please provide bank details to create a virtual account')
+                setError("Please provide bank details to create a virtual account")
                 return
             }
             if (accountNumber.length < 10) {
-                setError('Please provide a valid account number')
+                setError("Please provide a valid account number")
                 return
             }
         }
-
 
         setLoading(true)
 
@@ -58,10 +73,10 @@ export default function SignupPage() {
                 accountNumber,
                 businessName,
             })
-            router.push('/')
+            router.push("/")
         } catch (err) {
             console.log(err)
-            setError(err instanceof Error ? err.message : 'Failed to sign up')
+            setError(err instanceof Error ? err.message : "Failed to sign up")
         } finally {
             setLoading(false)
         }
@@ -85,17 +100,13 @@ export default function SignupPage() {
                         </div>
 
                         {error && (
-                            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                                {error}
-                            </div>
+                            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">{error}</div>
                         )}
 
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        First Name
-                                    </label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">First Name</label>
                                     <input
                                         type="text"
                                         value={firstName}
@@ -106,9 +117,7 @@ export default function SignupPage() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">
-                                        Last Name
-                                    </label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Last Name</label>
                                     <input
                                         type="text"
                                         value={lastName}
@@ -121,9 +130,7 @@ export default function SignupPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">
-                                    Email Address
-                                </label>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
                                 <input
                                     type="email"
                                     value={email}
@@ -135,9 +142,7 @@ export default function SignupPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">
-                                    Password
-                                </label>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
                                 <input
                                     type="password"
                                     value={password}
@@ -149,9 +154,7 @@ export default function SignupPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-2">
-                                    Confirm Password
-                                </label>
+                                <label className="block text-sm font-medium text-slate-700 mb-2">Confirm Password</label>
                                 <input
                                     type="password"
                                     value={confirmPassword}
@@ -163,17 +166,18 @@ export default function SignupPage() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-3">
-                                    Account Type
-                                </label>
+                                <label className="block text-sm font-medium text-slate-700 mb-3">Account Type</label>
                                 <div className="space-y-2">
-                                    <label className="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 transition-colors" style={{ borderColor: role === 'user' ? '#2563eb' : undefined }}>
+                                    <label
+                                        className="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
+                                        style={{ borderColor: role === "user" ? "#2563eb" : undefined }}
+                                    >
                                         <input
                                             type="radio"
                                             name="role"
                                             value="user"
-                                            checked={role === 'user'}
-                                            onChange={(e) => setRole(e.target.value as 'user')}
+                                            checked={role === "user"}
+                                            onChange={(e) => setRole(e.target.value as "user")}
                                             className="w-4 h-4 accent-blue-600"
                                         />
                                         <div className="ml-3 flex-1">
@@ -182,13 +186,16 @@ export default function SignupPage() {
                                         </div>
                                     </label>
 
-                                    <label className="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 transition-colors" style={{ borderColor: role === 'organizer' ? '#2563eb' : undefined }}>
+                                    <label
+                                        className="flex items-center p-3 border-2 border-slate-200 rounded-lg cursor-pointer hover:border-blue-400 transition-colors"
+                                        style={{ borderColor: role === "organizer" ? "#2563eb" : undefined }}
+                                    >
                                         <input
                                             type="radio"
                                             name="role"
                                             value="organizer"
-                                            checked={role === 'organizer'}
-                                            onChange={(e) => setRole(e.target.value as 'organizer')}
+                                            checked={role === "organizer"}
+                                            onChange={(e) => setRole(e.target.value as "organizer")}
                                             className="w-4 h-4 accent-blue-600"
                                         />
                                         <div className="ml-3 flex-1">
@@ -199,12 +206,10 @@ export default function SignupPage() {
                                 </div>
                             </div>
 
-                            {role === 'organizer' && (
+                            {role === "organizer" && (
                                 <>
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                                            Business Name
-                                        </label>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">Business Name</label>
                                         <input
                                             type="text"
                                             value={businessName}
@@ -214,33 +219,53 @@ export default function SignupPage() {
                                         />
                                     </div>
 
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                                Bank Code
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={bankCode}
-                                                onChange={(e) => setBankCode(e.target.value)}
-                                                placeholder="e.g., 058"
-                                                className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                                Account Number
-                                            </label>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-2">Account Number</label>
+                                        <div className="relative">
                                             <input
                                                 type="text"
                                                 value={accountNumber}
                                                 onChange={(e) => setAccountNumber(e.target.value)}
                                                 placeholder="0123456789"
-                                                className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                                                className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 pr-10 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                                            />
+                                            {fetchingBankDetails && (
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                    <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">Bank Code</label>
+                                            <input
+                                                type="text"
+                                                value={bankCode}
+                                                disabled
+                                                placeholder="e.g., 058"
+                                                className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 bg-slate-50 cursor-not-allowed opacity-60"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">Account Name</label>
+                                            <input
+                                                type="text"
+                                                value={accountName}
+                                                disabled
+                                                placeholder="Auto-filled"
+                                                className="w-full border-2 border-slate-200 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 bg-slate-50 cursor-not-allowed opacity-60"
                                             />
                                         </div>
                                     </div>
+
+                                    {bankError && (
+                                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                            <p className="text-xs text-yellow-700">{bankError}</p>
+                                        </div>
+                                    )}
 
                                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                                         <p className="text-xs text-blue-700">
@@ -256,13 +281,13 @@ export default function SignupPage() {
                                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 font-semibold flex items-center justify-center gap-2"
                             >
                                 {loading && <Spinner className="w-4 h-4" />}
-                                {loading ? 'Creating account...' : 'Sign Up'}
+                                {loading ? "Creating account..." : "Sign Up"}
                             </Button>
                         </form>
 
                         <div className="mt-6 text-center">
                             <p className="text-slate-600">
-                                Already have an account?{' '}
+                                Already have an account?{" "}
                                 <Link href="/auth/login" className="text-blue-600 hover:text-blue-700 font-semibold">
                                     Sign in
                                 </Link>
