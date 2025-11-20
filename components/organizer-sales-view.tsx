@@ -26,7 +26,19 @@ export function OrganizerSalesView() {
             try {
                 const response = await fetch('/api/organizer/sales')
                 const data = await response.json()
-                setSales(data)
+
+                // Convert numeric-like strings into real numbers
+                const cleaned = data.map((item: any) => ({
+                    ...item,
+                    ticket_price: Number(item.ticket_price ?? 0),
+                    total_capacity: Number(item.total_capacity ?? 0),
+                    tickets_sold: Number(item.tickets_sold ?? 0),
+                    tickets_remaining: Number(item.tickets_remaining ?? 0),
+                    total_revenue: Number(item.total_revenue ?? 0),
+                }))
+                console.log(response)
+
+                setSales(cleaned)
             } catch (error) {
                 console.error('Error fetching sales:', error)
             } finally {
@@ -36,6 +48,7 @@ export function OrganizerSalesView() {
 
         fetchSales()
     }, [])
+
 
     if (loading) {
         return (

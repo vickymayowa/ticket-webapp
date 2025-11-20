@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
@@ -22,6 +22,7 @@ export default function SignupPage() {
     const [loading, setLoading] = useState(false)
     const { signUp } = useAuth()
     const router = useRouter()
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -47,6 +48,7 @@ export default function SignupPage() {
                 return
             }
         }
+
 
         setLoading(true)
 
