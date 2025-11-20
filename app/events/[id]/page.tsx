@@ -23,9 +23,9 @@ export default async function EventPage({ params }: EventPageProps) {
   if (!event) {
     notFound()
   }
-
-  const ticketsPercentage = ((event.total_tickets - event.available_tickets) / event.total_tickets) * 100
-
+  
+  const ticketsPercentage = ((event.total_tickets - event.available_tickets) / event.total_tickets)
+  console.log(ticketsPercentage)
   return (
     <>
       <Header />
@@ -40,7 +40,7 @@ export default async function EventPage({ params }: EventPageProps) {
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white text-9xl opacity-30">🎭</span>
+              <span className="text-black text-9xl opacity-40">Event Hub</span>
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-[--color-primary] via-transparent to-transparent" />

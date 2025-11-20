@@ -71,11 +71,13 @@ export async function initializePaymentWithSplit(
         event_id: string
         quantity: number
         organizer_subaccount_code: string
-        commission_rate: number // e.g., 10 for 10%
+        commission_rate: number
     }
 ) {
     try {
         const commissionAmount = Math.round((amount * metadata.commission_rate) / 100)
+        console.log(metadata.commission_rate)
+        console.log(commissionAmount)
         const organizerAmount = amount - commissionAmount
 
         const response = await fetch('https://api.paystack.co/transaction/initialize', {
@@ -88,8 +90,7 @@ export async function initializePaymentWithSplit(
                 email,
                 amount: Math.round(amount * 100), // Convert to kobo
                 metadata,
-                split_code: undefined, // Set via split API if needed
-                // You can add split rules here if using Paystack Splits
+                split_code: undefined,
             }),
         })
 

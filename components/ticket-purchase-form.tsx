@@ -13,6 +13,7 @@ export function TicketPurchaseForm({ event }: { event: Event }) {
   const router = useRouter()
 
   const totalPrice = quantity * event.price
+  console.log("Real", totalPrice)
 
   const handlePurchase = async () => {
     setLoading(true)
@@ -25,14 +26,15 @@ export function TicketPurchaseForm({ event }: { event: Event }) {
           quantity,
         }),
       })
-
+      console.log(response)
       const data = await response.json()
+      console.log(data)
 
-      if (data.authorization_url) {
-        window.location.href = data.authorization_url
-      }
+      // if (data.authorization_url) {
+      //   window.location.href = data.authorization_url
+      // }
     } catch (error) {
-      console.error('Checkout error:', error)
+      console.log('Checkout error:', error)
       alert('Failed to initiate checkout. Please try again.')
     } finally {
       setLoading(false)

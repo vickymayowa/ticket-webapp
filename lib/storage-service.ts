@@ -16,9 +16,9 @@ export async function uploadEventImage(file: File): Promise<string | null> {
                 cacheControl: '3600',
                 upsert: false
             })
-            console.log(data)
+        console.log(data)
         if (error) {
-            console.error('Upload error:', error)
+            console.log('Upload error:', error)
             return null
         }
 
@@ -26,10 +26,10 @@ export async function uploadEventImage(file: File): Promise<string | null> {
         const { data: { publicUrl } } = supabase.storage
             .from('event-images')
             .getPublicUrl(filePath)
-
+        console.log('Public URL:', publicUrl)
         return publicUrl
     } catch (error) {
-        console.error('Error uploading image:', error)
+        console.log('Error uploading image:', error)
         return null
     }
 }

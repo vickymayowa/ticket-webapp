@@ -70,11 +70,10 @@ export function EventForm() {
       if (imageUrl) {
         setFormData({ ...formData, image_url: imageUrl })
         setImagePreview(URL.createObjectURL(file))
-      } else {
-        alert('Failed to upload image')
       }
+      console.log('Image uploaded successfully:', imageUrl)
     } catch (error) {
-      console.error('Upload error:', error)
+      console.log('Upload error:', error)
       alert('Error uploading image')
     } finally {
       setUploading(false)
