@@ -80,6 +80,9 @@ export async function initializePaymentWithSplit(
         console.log(commissionAmount)
         const organizerAmount = amount - commissionAmount
 
+        console.log("AMOUNT RECEIVED", amount)
+        console.log("AMOUNT SENT TO PAYSTACK (KOBO)", Math.round(amount * 100))
+
         const response = await fetch('https://api.paystack.co/transaction/initialize', {
             method: 'POST',
             headers: {
@@ -93,30 +96,9 @@ export async function initializePaymentWithSplit(
                 split_code: undefined,
             }),
         })
+        console.log(response)
+    }}
 
-        if (!response.ok) {
-            const error = await response.json()
-            throw new Error(`Paystack initialization failed: ${error.message}`)
-        }
-
-        const data = await response.json()
-
-        if (!data.status) {
-            throw new Error('Payment initialization failed')
-        }
-
-        return {
-            authorization_url: data.data.authorization_url,
-            access_code: data.data.access_code,
-            reference: data.data.reference,
-            commission_amount: commissionAmount,
-            organizer_amount: organizerAmount,
-        }
-    } catch (error) {
-        console.error('Payment initialization error:', error)
-        throw error
-    }
-}
 
 /**
  * Verify payment and handle split settlement
@@ -136,7 +118,11 @@ export async function verifyPayment(reference: string) {
             throw new Error('Payment verification failed')
         }
 
-        return data.data
+        return {
+            status: data.status,
+            message: data.message,
+            data: data.data,
+        }
     } catch (error) {
         console.error('Payment verification error:', error)
         throw error

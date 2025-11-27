@@ -1,10 +1,19 @@
+"use client"
 import { getSupabaseServerClient } from '@/lib/supabase-server'
 import { EventCard } from '@/components/event-card'
 import { Header } from '@/components/header'
 import { type Event } from '@/lib/types'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { getCurrentUser } from '@/lib/utils-server'
 
 export default async function HomePage() {
+  const router = useRouter()
+  const currentUser = await getCurrentUser()
+
+
+  currentUser?.role && router.push(currentUser?.role === 'organiser' ? '/organiser' : '/events')
+
   const supabase = await getSupabaseServerClient()
 
   const { data: events } = await supabase

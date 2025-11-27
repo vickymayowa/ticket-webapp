@@ -5,10 +5,15 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth-context'
 import { LogOut, TicketIcon, Briefcase, User } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { getCurrentUser } from '@/lib/utils-server'
 
 export function Header() {
   const { user, signOut } = useAuth()
   const router = useRouter()
+
+  const currentUser = getCurrentUser()
+  currentUser?.role && router.push(currentUser?.role === 'organiser' ? '/organiser' : '/events')
+
 
   const handleLogout = async () => {
     try {
