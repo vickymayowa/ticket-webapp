@@ -75,14 +75,47 @@ export async function initializePaymentWithSplit(
     }
 ) {
     try {
+        // Calculate commission and organizer share
         const commissionAmount = Math.round((amount * metadata.commission_rate) / 100)
-        console.log(metadata.commission_rate)
-        console.log(commissionAmount)
         const organizerAmount = amount - commissionAmount
+        console.log("Commission Amount:", commissionAmount)
+        console.log("Organizer Amount:", organizerAmount)
 
-        console.log("AMOUNT RECEIVED", amount)
-        console.log("AMOUNT SENT TO PAYSTACK (KOBO)", Math.round(amount * 100))
+        // Create split configuration for Paystack
+        const split = {
+            type: 'percentage',
+            currency: 'NGN',
+            subaccounts: [
+                {
+                    subaccount: metadata.organizer_subaccount_code,
+                    share: 100 - metadata.commission_rate
+                }
+            ],
+            bearer_type: 'subaccount',
+            bearer_subaccount: metadata.organizer_subaccount_code
+        }
 
+        // First create the split code
+        const splitResponse = await fetch('https://api.paystack.co/split', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+            },
+            body: JSON.stringify(split),
+        })
+
+        if (!splitResponse.ok) {
+            const error = await splitResponse.json()
+            throw new Error(`Paystack split creation error: ${error.message}`)
+        }
+
+        const splitData = await splitResponse.json()
+        if (!splitData.status) {
+            throw new Error('Failed to create Paystack split')
+        }
+
+        // Initialize payment with the split code
         const response = await fetch('https://api.paystack.co/transaction/initialize', {
             method: 'POST',
             headers: {
@@ -93,11 +126,31 @@ export async function initializePaymentWithSplit(
                 email,
                 amount: Math.round(amount * 100), // Convert to kobo
                 metadata,
-                split_code: undefined,
+                split_code: splitData.data.split_code,
             }),
         })
-        console.log(response)
-    }}
+
+        if (!response.ok) {
+            const error = await response.json()
+            throw new Error(`Paystack initialization error: ${error.message}`)
+        }
+
+        const data = await response.json()
+        if (!data.status) {
+            throw new Error('Failed to initialize payment')
+        }
+
+        return {
+            authorization_url: data.data.authorization_url,
+            access_code: data.data.access_code,
+            reference: data.data.reference,
+            split_code: splitData.data.split_code
+        }
+    } catch (error) {
+        console.error('Payment initialization error:', error)
+        throw error
+    }
+}
 
 
 /**

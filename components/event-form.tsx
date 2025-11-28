@@ -24,6 +24,7 @@ interface EventFormData {
   discount_enabled: boolean
   discount_type: 'percentage' | 'fixed' | ''
   discount_value: number
+  discount_percent: number
   coupon_code: string
 }
 
@@ -44,6 +45,7 @@ export function EventForm() {
     price: 5000,
     discount_enabled: false,
     discount_type: '',
+    discount_percent: 0,
     discount_value: 0,
     coupon_code: '',
   })
@@ -57,13 +59,18 @@ export function EventForm() {
       setFormData({
         ...formData,
         [name]: checked,
-        ...(name === 'discount_enabled' && !checked && { discount_type: '', discount_value: 0, coupon_code: '' }),
+        ...(name === 'discount_enabled' && !checked && { discount_type: '', discount_value: 0, discount_percent: 0, coupon_code: '' }),
       })
     } else {
-      setFormData({
-        ...formData,
-        [name]: type === 'number' ? parseFloat(value) : value,
-      })
+      const parsedValue = type === 'number' ? parseFloat(value) : value
+      const updates: Partial<EventFormData> = { [name]: parsedValue }
+
+      // Sync discount_percent with discount_value when type is percentage
+      if (name === 'discount_value' && formData.discount_type === 'percentage') {
+        updates.discount_percent = parsedValue as number
+      }
+
+      setFormData({ ...formData, ...updates })
     }
   }
 
@@ -127,6 +134,7 @@ export function EventForm() {
           price: 5000,
           discount_enabled: false,
           discount_type: '',
+          discount_percent: 0,
           discount_value: 0,
           coupon_code: '',
         })

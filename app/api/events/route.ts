@@ -51,7 +51,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { title, description, category, location, image_url, start_date, end_date, total_tickets, price } = body
+    const {
+      title,
+      description,
+      category,
+      location,
+      image_url,
+      start_date,
+      end_date,
+      total_tickets,
+      price,
+      discount_enabled,
+      discount_type,
+      discount_value,
+      discount_percent,
+    } = body
 
     if (!title || !location || !start_date || !end_date || !total_tickets || !price) {
       return NextResponse.json(
@@ -74,6 +88,10 @@ export async function POST(request: NextRequest) {
           total_tickets,
           available_tickets: total_tickets,
           price,
+          discount_enabled,
+          discount_type,
+          discount_value,
+          discount_percent,
           created_by: user.id,
         },
       ])
@@ -91,7 +109,6 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-
 
 export async function DELETE(request: NextRequest) {
   try {

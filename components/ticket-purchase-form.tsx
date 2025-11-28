@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Event } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/utils-client'
@@ -10,10 +10,54 @@ import { Spinner } from '@/components/ui/spinner'
 export function TicketPurchaseForm({ event }: { event: Event }) {
   const [quantity, setQuantity] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [couponCode, setCouponCode] = useState('')
+  const [discount, setDiscount] = useState(0)
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string
+    type: 'fixed' | 'percentage'
+    value: number
+  } | null>(null)
   const router = useRouter()
 
-  const totalPrice = quantity * event.price
-  console.log("Real", totalPrice)
+  const subtotal = quantity * event.price
+  const totalPrice = subtotal - discount
+
+  // Re-apply coupon whenever quantity changes
+  useEffect(() => {
+    if (appliedCoupon) {
+      applyCoupon()
+    }
+  }, [quantity])
+
+  const applyCoupon = async () => {
+    if (!couponCode.trim()) return
+    try {
+      const res = await fetch('/api/coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ coupon: couponCode.trim(), subtotal, eventId: event.id }),
+      })
+      const data = await res.json()
+      if (res.ok && data.valid) {
+        setAppliedCoupon({
+          code: data.coupon,
+          type: data.discountType || 'percentage',
+          value: data.discountPercent || data.discountAmount,
+        })
+        // Ensure discount is recalculated based on current subtotal
+        const calculatedDiscount = data.discountType === 'fixed'
+          ? data.discountAmount
+          : (subtotal * data.discountPercent) / 100
+        setDiscount(calculatedDiscount)
+      } else {
+        alert(data.message || 'Invalid coupon code')
+        setDiscount(0)
+        setAppliedCoupon(null)
+      }
+    } catch {
+      alert('Failed to validate coupon')
+    }
+  }
 
   const handlePurchase = async () => {
     setLoading(true)
@@ -24,15 +68,13 @@ export function TicketPurchaseForm({ event }: { event: Event }) {
         body: JSON.stringify({
           event_id: event.id,
           quantity,
+          coupon_code: appliedCoupon?.code,
         }),
       })
-      console.log(response)
       const data = await response.json()
-      console.log(data)
-
-      // if (data.authorization_url) {
-      //   window.location.href = data.authorization_url
-      // }
+      if (data.authorization_url) {
+        window.location.href = data.authorization_url
+      }
     } catch (error) {
       console.log('Checkout error:', error)
       alert('Failed to initiate checkout. Please try again.')
@@ -80,6 +122,37 @@ export function TicketPurchaseForm({ event }: { event: Event }) {
         </p>
       </div>
 
+      {/* Coupon Input */}
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-[--color-text] mb-2">
+          Coupon Code (optional)
+        </label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={couponCode}
+            onChange={(e) => setCouponCode(e.target.value)}
+            placeholder="Enter coupon code"
+            className="flex-1 rounded-lg border border-[--color-border] bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[--color-accent]"
+          />
+          <Button
+            onClick={applyCoupon}
+            disabled={!couponCode.trim() || loading}
+            className="btn-secondary px-4 py-2 text-sm"
+          >
+            {loading ? <Spinner className="size-4" /> : 'Apply'}
+          </Button>
+        </div>
+        {appliedCoupon && (
+          <p className="text-xs text-green-600 mt-2">
+            Coupon “{appliedCoupon.code}” applied –{' '}
+            {appliedCoupon.type === 'fixed'
+              ? formatCurrency(appliedCoupon.value) + ' off'
+              : appliedCoupon.value + '% off'}
+          </p>
+        )}
+      </div>
+
       {/* Price Breakdown */}
       <div className="bg-[--color-surface-hover] rounded-xl p-5 mb-8 space-y-3 border border-[--color-border]">
         <div className="flex justify-between text-sm">
@@ -90,6 +163,12 @@ export function TicketPurchaseForm({ event }: { event: Event }) {
           <span className="text-[--color-text-muted]">Quantity</span>
           <span className="text-[--color-text] font-semibold">×{quantity}</span>
         </div>
+        {discount > 0 && (
+          <div className="flex justify-between text-sm text-green-600">
+            <span>Discount</span>
+            <span className="font-semibold">−{formatCurrency(discount)}</span>
+          </div>
+        )}
         <div className="border-t border-[--color-border] pt-3 flex justify-between">
           <span className="font-semibold text-[--color-text]">Total Amount</span>
           <span className="text-2xl font-bold text-[--color-accent]">
