@@ -2,7 +2,7 @@ import { getSupabaseServerClient } from '@/lib/supabase-server'
 import { notFound } from 'next/navigation'
 import { Header } from '@/components/header'
 import { TicketPurchaseForm } from '@/components/ticket-purchase-form'
-import { formatDate, formatCurrency } from '@/lib/utils-server'
+import { formatDate, formatCurrency } from '@/lib/utils-client'
 import Image from 'next/image'
 import { EventDetailSkeleton } from '@/components/event-detail-skeleton'
 
@@ -23,7 +23,7 @@ export default async function EventPage({ params }: EventPageProps) {
   if (!event) {
     notFound()
   }
-  
+
   const ticketsPercentage = ((event.total_tickets - event.available_tickets) / event.total_tickets)
   console.log(ticketsPercentage)
   return (

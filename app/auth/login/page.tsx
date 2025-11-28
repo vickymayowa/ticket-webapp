@@ -7,7 +7,7 @@ import { useAuth } from '@/lib/auth-context'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import { Spinner } from '@/components/ui/spinner'
-import { getCurrentUser } from '@/lib/utils-server'
+import { getCurrentUser } from '@/lib/utils-client'
 
 export default function Page() {
     const [email, setEmail] = useState('')
@@ -18,7 +18,6 @@ export default function Page() {
     const router = useRouter()
 
     const currentUser = getCurrentUser()
-    currentUser?.role && router.push(currentUser?.role === 'organiser' ? '/organiser' : '/events')
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -27,8 +26,7 @@ export default function Page() {
 
         try {
             await signIn(email, password)
-            const user = await getCurrentUser()
-            router.push(user?.role === 'organiser' ? '/organiser' : '/events')
+            router.push('/events')
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to sign in')
         } finally {

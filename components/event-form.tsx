@@ -21,6 +21,10 @@ interface EventFormData {
   end_date: string
   total_tickets: number
   price: number
+  discount_enabled: boolean
+  discount_type: 'percentage' | 'fixed' | ''
+  discount_value: number
+  coupon_code: string
 }
 
 export function EventForm() {
@@ -38,16 +42,29 @@ export function EventForm() {
     end_date: '',
     total_tickets: 100,
     price: 5000,
+    discount_enabled: false,
+    discount_type: '',
+    discount_value: 0,
+    coupon_code: '',
   })
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target
-    setFormData({
-      ...formData,
-      [name]: type === 'number' ? parseFloat(value) : value,
-    })
+    if (type === 'checkbox') {
+      const checked = (e.target as HTMLInputElement).checked
+      setFormData({
+        ...formData,
+        [name]: checked,
+        ...(name === 'discount_enabled' && !checked && { discount_type: '', discount_value: 0, coupon_code: '' }),
+      })
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === 'number' ? parseFloat(value) : value,
+      })
+    }
   }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -108,6 +125,10 @@ export function EventForm() {
           end_date: '',
           total_tickets: 100,
           price: 5000,
+          discount_enabled: false,
+          discount_type: '',
+          discount_value: 0,
+          coupon_code: '',
         })
         setImagePreview('')
         router.refresh()
@@ -292,6 +313,69 @@ export function EventForm() {
               className="input-field"
             />
           </div>
+        </div>
+
+        {/* Discount / Coupon Section */}
+        <div className="space-y-4 border-t pt-6">
+          <div className="flex items-center gap-3">
+            <input
+              id="discount_enabled"
+              name="discount_enabled"
+              type="checkbox"
+              checked={formData.discount_enabled}
+              onChange={handleChange}
+              className="w-4 h-4 text-blue-600 rounded"
+            />
+            <Label htmlFor="discount_enabled" className="text-base font-semibold text-slate-900">
+              Enable Discount / Coupon
+            </Label>
+          </div>
+
+          {formData.discount_enabled && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="discount_type" className="text-sm font-medium text-slate-700 mb-1 block">Discount Type</Label>
+                <select
+                  id="discount_type"
+                  name="discount_type"
+                  value={formData.discount_type}
+                  onChange={handleChange}
+                  className="input-field"
+                >
+                  <option value="">Select type</option>
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="fixed">Fixed Amount (₦)</option>
+                </select>
+              </div>
+
+              <div>
+                <Label htmlFor="discount_value" className="text-sm font-medium text-slate-700 mb-1 block">Value</Label>
+                <Input
+                  id="discount_value"
+                  name="discount_value"
+                  type="number"
+                  value={formData.discount_value}
+                  onChange={handleChange}
+                  min="0"
+                  step={formData.discount_type === 'percentage' ? 1 : 100}
+                  placeholder={formData.discount_type === 'percentage' ? 'e.g., 10' : 'e.g., 500'}
+                  className="input-field"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="coupon_code" className="text-sm font-medium text-slate-700 mb-1 block">Coupon Code (optional)</Label>
+                <Input
+                  id="coupon_code"
+                  name="coupon_code"
+                  value={formData.coupon_code}
+                  onChange={handleChange}
+                  placeholder="e.g., SAVE20"
+                  className="input-field"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <Button

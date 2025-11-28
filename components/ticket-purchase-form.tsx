@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Event } from '@/lib/types'
 import { Button } from '@/components/ui/button'
-import { formatCurrency } from '@/lib/utils-server'
+import { formatCurrency } from '@/lib/utils-client'
 import { useRouter } from 'next/navigation'
 import { Spinner } from '@/components/ui/spinner'
 

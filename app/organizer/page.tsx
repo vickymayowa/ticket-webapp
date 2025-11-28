@@ -1,7 +1,6 @@
 import { EventForm } from '@/components/event-form'
 import { AdminEventList } from '@/components/admin-event-list'
 import { OrganizerSalesView } from '@/components/organizer-sales-view'
-import { OrganizerTicketsList } from '@/components/organizer-tickets-list'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 
@@ -33,12 +32,6 @@ export default function OrganizerPage() {
           >
             Sales & Analytics
           </TabsTrigger>
-          <TabsTrigger
-            value="tickets"
-            className="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-blue-600 data-[state=active]:text-white"
-          >
-            Tickets
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="create" className="mt-8">
@@ -51,10 +44,6 @@ export default function OrganizerPage() {
 
         <TabsContent value="sales" className="mt-8">
           <OrganizerSalesView />
-        </TabsContent>
-
-        <TabsContent value="tickets" className="mt-8">
-          <OrganizerTicketsList />
         </TabsContent>
       </Tabs>
     </div>

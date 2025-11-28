@@ -1,6 +1,6 @@
 import { Event } from '@/lib/types'
 import Link from 'next/link'
-import { formatDate, formatCurrency } from '@/lib/utils-server'
+import { formatDate, formatCurrency } from '@/lib/utils-client'
 import Image from 'next/image'
 
 export function EventCard({ event }: { event: Event }) {
@@ -21,7 +21,7 @@ export function EventCard({ event }: { event: Event }) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600">
-              <span className="text-white text-5xl">🎭</span>
+              <span className="text-white text-5xl">Ticket Event Hub</span>
             </div>
           )}
 

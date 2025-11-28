@@ -1,9 +1,12 @@
+
+
 import { getSupabaseServerClient } from './supabase-server'
 
 export async function getCurrentUser() {
   try {
     const supabase = await getSupabaseServerClient()
     const { data } = await supabase.auth.getUser()
+    // console.log(data)
     return data.user
   } catch (error) {
     console.error('Error getting current user:', error)

@@ -4,21 +4,15 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth-context'
 import { LogOut, TicketIcon, Briefcase, User } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { getCurrentUser } from '@/lib/utils-server'
+import { getCurrentUser } from '@/lib/utils-client'
 
 export function Header() {
   const { user, signOut } = useAuth()
-  const router = useRouter()
-
-  const currentUser = getCurrentUser()
-  currentUser?.role && router.push(currentUser?.role === 'organiser' ? '/organiser' : '/events')
-
+  // const currentUser = getCurrentUser()
 
   const handleLogout = async () => {
     try {
       await signOut()
-      router.push('/')
     } catch (error) {
       console.error('Logout error:', error)
     }

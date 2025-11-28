@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Event } from '@/lib/types'
-import { formatDate, formatCurrency } from '@/lib/utils-server'
+import { formatDate, formatCurrency } from '@/lib/utils-client'
 import { Button } from '@/components/ui/button'
 import { AdminEventListSkeleton } from '@/components/admin-event-skeleton'
 
