@@ -91,3 +91,81 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const supabase = await getSupabaseServerClient()
+    const body = await request.json()
+    const { id: eventId } = body
+
+    if (!eventId) {
+      return NextResponse.json(
+        { error: 'Missing eventId in body' },
+        { status: 400 }
+      )
+    }
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (userData?.role !== 'organizer' && userData?.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Only organizers can delete events' },
+        { status: 403 }
+      )
+    }
+
+    // Check if event exists and user is the creator (for organizers)
+    if (userData?.role === 'organizer') {
+      const { data: event } = await supabase
+        .from('events')
+        .select('created_by')
+        .eq('id', eventId)
+        .single()
+
+      if (!event) {
+        return NextResponse.json(
+          { error: 'Event not found' },
+          { status: 404 }
+        )
+      }
+
+      if (event.created_by !== user.id) {
+        return NextResponse.json(
+          { error: 'You can only delete your own events' },
+          { status: 403 }
+        )
+      }
+    }
+
+    const { error: deleteError } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', eventId)
+
+    if (deleteError) throw deleteError
+
+    return NextResponse.json({ message: 'Event deleted successfully' })
+  } catch (error) {
+    console.error('Error deleting event:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete event' },
+      { status: 500 }
+    )
+  }
+}
