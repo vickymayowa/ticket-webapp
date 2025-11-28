@@ -59,6 +59,33 @@ export function TicketPurchaseForm({ event }: { event: Event }) {
     }
   }
 
+  const handleFreeTicket = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/free-ticket', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          event_id: event.id,
+          quantity,
+          coupon_code: appliedCoupon?.code,
+        }),
+      })
+      const data = await response.json()
+      if (response.ok && data.success) {
+        // Redirect to success or tickets page
+        router.push('/tickets?success=1')
+      } else {
+        alert(data.message || 'Failed to reserve free ticket')
+      }
+    } catch (error) {
+      console.log('Free ticket error:', error)
+      alert('Failed to reserve free ticket. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handlePurchase = async () => {
     setLoading(true)
     try {
@@ -181,7 +208,7 @@ export function TicketPurchaseForm({ event }: { event: Event }) {
 
       {/* Purchase Button */}
       <Button
-        onClick={handlePurchase}
+        onClick={isFree ? handleFreeTicket : handlePurchase}
         disabled={loading || event.available_tickets === 0}
         className="w-full btn-primary py-4 text-base mb-3"
       >

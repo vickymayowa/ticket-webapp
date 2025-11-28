@@ -141,3 +141,6 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
+
+// what can i do if the coopon code has been added to the ticket 

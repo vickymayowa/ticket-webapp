@@ -16,7 +16,7 @@ export default function MyTicketsPage({
   if (params?.unauthorized === 'true') {
     return (
       <>
-        <Header key={Date.now()} />
+        <Header  />
         <main className="container-tight py-12">
           <div className="max-w-xl mx-auto text-center">
             <h1 className="text-5xl font-bold text-[--color-text] mb-4">Unauthorized</h1>
