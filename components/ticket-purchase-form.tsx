@@ -83,6 +83,8 @@ export function TicketPurchaseForm({ event }: { event: Event }) {
     }
   }
 
+  const isFree = totalPrice <= 0
+
   return (
     <div className="card-premium sticky top-24">
       <div className="mb-8">
@@ -185,9 +187,15 @@ export function TicketPurchaseForm({ event }: { event: Event }) {
       >
         <span className="flex items-center justify-center gap-2">
           {loading && <Spinner className="size-5" />}
-          {loading ? 'Processing Payment...' : 'Continue to Payment'}
+          {loading ? 'Processing...' : isFree ? 'Get Free Ticket' : 'Continue to Payment'}
         </span>
       </Button>
+
+      {isFree && (
+        <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200 mb-3">
+          <p className="text-[--color-text] font-semibold">This ticket is free – enjoy the event!</p>
+        </div>
+      )}
 
       {event.available_tickets === 0 && (
         <div className="text-center p-4 bg-red-50 rounded-lg border border-red-200">

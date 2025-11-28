@@ -73,14 +73,14 @@ export default async function HomePage() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 gap-6 pt-8 border-t border-white/10">
+                <div className="grid grid-cols-2 gap-6 pt-8 border-t border-white/10 text-black">
                   <div>
-                    <div className="text-3xl font-bold text-blue-300">10K+</div>
-                    <p className="text-slate-400 text-sm">Events Listed</p>
+                    <div className="text-3xl font-bold">10K+</div>
+                    <p className="text-white text-sm">Events Listed</p>
                   </div>
                   <div>
-                    <div className="text-3xl font-bold text-blue-300">50K+</div>
-                    <p className="text-slate-400 text-sm">Happy Attendees</p>
+                    <div className="text-3xl font-bold">50K+</div>
+                    <p className="text-white text-sm">Happy Attendees</p>
                   </div>
                 </div>
               </div>
