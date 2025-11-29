@@ -65,11 +65,21 @@ export async function POST(request: NextRequest) {
       discount_type,
       discount_value,
       discount_percent,
+      is_free,
     } = body
 
-    if (!title || !location || !start_date || !end_date || !total_tickets || !price) {
+    if (!title || !location || !start_date || !end_date || !total_tickets) {
       return NextResponse.json(
         { error: 'Missing required fields' },
+        { status: 400 }
+      )
+    }
+
+    // If it's a free event, price is optional and defaults to 0
+    const finalPrice = is_free ? 0 : price
+    if (!is_free && !price) {
+      return NextResponse.json(
+        { error: 'Price is required for paid events' },
         { status: 400 }
       )
     }
@@ -87,11 +97,12 @@ export async function POST(request: NextRequest) {
           end_date,
           total_tickets,
           available_tickets: total_tickets,
-          price,
+          price: finalPrice,
           discount_enabled,
           discount_type,
           discount_value,
           discount_percent,
+          is_free,
           created_by: user.id,
         },
       ])

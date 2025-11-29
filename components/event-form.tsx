@@ -21,6 +21,7 @@ interface EventFormData {
   end_date: string
   total_tickets: number
   price: number
+  is_free: boolean
   discount_enabled: boolean
   discount_type: 'percentage' | 'fixed' | ''
   discount_value: number
@@ -43,6 +44,7 @@ export function EventForm() {
     end_date: '',
     total_tickets: 100,
     price: 5000,
+    is_free: false,
     discount_enabled: false,
     discount_type: '',
     discount_percent: 0,
@@ -56,11 +58,27 @@ export function EventForm() {
     const { name, value, type } = e.target
     if (type === 'checkbox') {
       const checked = (e.target as HTMLInputElement).checked
-      setFormData({
-        ...formData,
-        [name]: checked,
-        ...(name === 'discount_enabled' && !checked && { discount_type: '', discount_value: 0, discount_percent: 0, coupon_code: '' }),
-      })
+      const updates: Partial<EventFormData> = { [name]: checked }
+
+      // When marking as free, reset price and disable discounts
+      if (name === 'is_free' && checked) {
+        updates.price = 0
+        updates.discount_enabled = false
+        updates.discount_type = ''
+        updates.discount_value = 0
+        updates.discount_percent = 0
+        updates.coupon_code = ''
+      }
+
+      // When disabling discount, clear discount fields
+      if (name === 'discount_enabled' && !checked) {
+        updates.discount_type = ''
+        updates.discount_value = 0
+        updates.discount_percent = 0
+        updates.coupon_code = ''
+      }
+
+      setFormData({ ...formData, ...updates })
     } else {
       const parsedValue = type === 'number' ? parseFloat(value) : value
       const updates: Partial<EventFormData> = { [name]: parsedValue }
@@ -132,6 +150,7 @@ export function EventForm() {
           end_date: '',
           total_tickets: 100,
           price: 5000,
+          is_free: false,
           discount_enabled: false,
           discount_type: '',
           discount_percent: 0,
@@ -307,19 +326,37 @@ export function EventForm() {
             />
           </div>
 
-          <div>
-            <Label htmlFor="price" className="text-base font-semibold text-slate-900 mb-2 block">Price per Ticket (₦)</Label>
-            <Input
-              id="price"
-              name="price"
-              type="number"
-              step="100"
-              value={formData.price}
-              onChange={handleChange}
-              min="0"
-              required
-              className="input-field"
-            />
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <input
+                id="is_free"
+                name="is_free"
+                type="checkbox"
+                checked={formData.is_free}
+                onChange={handleChange}
+                className="w-4 h-4 text-blue-600 rounded"
+              />
+              <Label htmlFor="is_free" className="text-base font-semibold text-slate-900">
+                This is a free event
+              </Label>
+            </div>
+
+            {!formData.is_free && (
+              <div>
+                <Label htmlFor="price" className="text-base font-semibold text-slate-900 mb-2 block">Price per Ticket (₦)</Label>
+                <Input
+                  id="price"
+                  name="price"
+                  type="number"
+                  step="100"
+                  value={formData.price}
+                  onChange={handleChange}
+                  min="0"
+                  required
+                  className="input-field"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -332,6 +369,7 @@ export function EventForm() {
               type="checkbox"
               checked={formData.discount_enabled}
               onChange={handleChange}
+              disabled={formData.is_free}
               className="w-4 h-4 text-blue-600 rounded"
             />
             <Label htmlFor="discount_enabled" className="text-base font-semibold text-slate-900">
@@ -339,7 +377,7 @@ export function EventForm() {
             </Label>
           </div>
 
-          {formData.discount_enabled && (
+          {formData.discount_enabled && !formData.is_free && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="discount_type" className="text-sm font-medium text-slate-700 mb-1 block">Discount Type</Label>
