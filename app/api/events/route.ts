@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = await getSupabaseServerClient()
     const body = await request.json()
+    console.log(body)
 
     const {
       data: { user },
@@ -113,7 +114,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(event)
   } catch (error) {
-    console.error('Error creating event:', error)
+    // console.error('Error creating event:', error)
+    console.log(error)
     return NextResponse.json(
       { error: 'Failed to create event' },
       { status: 500 }

@@ -23,7 +23,7 @@ interface EventFormData {
   price: number
   is_free: boolean
   discount_enabled: boolean
-  discount_type: 'percentage' | 'fixed' | ''
+  discount_type: 'percentage' | 'fixed' | 'none'
   discount_value: number
   discount_percent: number
   coupon_code: string
@@ -46,7 +46,7 @@ export function EventForm() {
     price: 5000,
     is_free: false,
     discount_enabled: false,
-    discount_type: '',
+    discount_type: 'none',
     discount_percent: 0,
     discount_value: 0,
     coupon_code: '',
@@ -64,7 +64,7 @@ export function EventForm() {
       if (name === 'is_free' && checked) {
         updates.price = 0
         updates.discount_enabled = false
-        updates.discount_type = ''
+        updates.discount_type = 'none'
         updates.discount_value = 0
         updates.discount_percent = 0
         updates.coupon_code = ''
@@ -72,7 +72,7 @@ export function EventForm() {
 
       // When disabling discount, clear discount fields
       if (name === 'discount_enabled' && !checked) {
-        updates.discount_type = ''
+        updates.discount_type = 'none'
         updates.discount_value = 0
         updates.discount_percent = 0
         updates.coupon_code = ''
@@ -152,7 +152,7 @@ export function EventForm() {
           price: 5000,
           is_free: false,
           discount_enabled: false,
-          discount_type: '',
+          discount_type: 'none',
           discount_percent: 0,
           discount_value: 0,
           coupon_code: '',
@@ -165,6 +165,7 @@ export function EventForm() {
       }
     } catch (error) {
       console.error('Error creating event:', error)
+      console.log(error)
       alert('An error occurred')
     } finally {
       setLoading(false)
