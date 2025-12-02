@@ -7,7 +7,13 @@ import type { User } from '@/lib/types'
 interface AuthContextType {
     user: User | null
     loading: boolean
-    signUp: (email: string, password: string, firstName: string, lastName: string, role: 'organizer' | 'user') => Promise<void>
+    signUp: (
+        email: string,
+        password: string,
+        firstName: string,
+        lastName: string,
+        role: 'organizer' | 'user'
+    ) => Promise<void>
     signIn: (email: string, password: string) => Promise<void>
     signOut: () => Promise<void>
 }
@@ -17,12 +23,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
+
     const supabase = getSupabaseClient()
 
+    // Fetch user on first load
     useEffect(() => {
-        const checkUser = async () => {
+        const loadUser = async () => {
             try {
                 const { data: { user: authUser } } = await supabase.auth.getUser()
+
                 if (authUser) {
                     const { data: userData } = await supabase
                         .from('users')
@@ -30,44 +39,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         .eq('id', authUser.id)
                         .single()
 
-                    if (userData) {
-                        setUser(userData)
-                    }
+                    if (userData) setUser(userData)
                 }
             } catch (error) {
-                console.log("Auth check error:", error)
+                console.log("Auth initial load error:", error)
             } finally {
                 setLoading(false)
             }
         }
 
-        checkUser()
+        loadUser()
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (session: any) => {
-            if (session?.user) {
-                const { data: userData } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .single()
+        // Listen for login/logout/sign-up
+        const { data: authListener } = supabase.auth.onAuthStateChange(
+            async (event, session) => {
+                setLoading(true)
 
-                if (userData) {
-                    setUser(userData)
+                if (session?.user) {
+                    const { data: userData } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('id', session.user.id)
+                        .single()
+
+                    setUser(userData || null)
+                } else {
+                    setUser(null)
                 }
-            } else {
-                setUser(null)
-            }
-        })
 
-        return () => subscription?.unsubscribe()
+                setLoading(false)
+            }
+        )
+
+        return () => authListener.subscription.unsubscribe()
     }, [supabase])
 
-    const signUp = async (email: string, password: string, firstName: string, lastName: string, role: 'organizer' | 'user' = 'user') => {
+    const signUp = async (
+        email: string,
+        password: string,
+        firstName: string,
+        lastName: string,
+        role: 'organizer' | 'user' = 'user'
+    ) => {
         const { data, error: authError } = await supabase.auth.signUp({
             email,
             password,
             options: {
-                emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
+                emailRedirectTo:
+                    typeof window !== 'undefined'
+                        ? window.location.origin
+                        : undefined,
             },
         })
 
@@ -76,14 +97,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (data.user) {
             const { error: userError } = await supabase
                 .from('users')
-                .insert([{
-                    id: data.user.id,
-                    email,
-                    first_name: firstName,
-                    last_name: lastName,
-                    is_admin: role === 'admin',
-                    role: role,
-                }])
+                .insert([
+                    {
+                        id: data.user.id,
+                        email,
+                        first_name: firstName,
+                        last_name: lastName,
+                        role,
+                        is_admin: role === 'admin',
+                    },
+                ])
 
             if (userError) throw userError
         }
@@ -94,7 +117,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             email,
             password,
         })
-
         if (error) throw error
     }
 
@@ -105,7 +127,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, loading, signUp, signIn, signOut }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                loading,
+                signUp,
+                signIn,
+                signOut,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     )
@@ -113,7 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
     const context = useContext(AuthContext)
-    if (context === undefined) {
+    if (!context) {
         throw new Error('useAuth must be used within AuthProvider')
     }
     return context
