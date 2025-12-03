@@ -66,7 +66,7 @@ export default async function HomePage() {
                     </button>
                   </Link>
                   <Link href="/auth/signup" className="inline-block">
-                    <button className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white border border-white/30 rounded-lg font-bold transition-all backdrop-blur-sm w-full sm:w-auto text-lg">
+                    <button className="px-8 py-4 bg-white/90 hover:bg-white/20 text-black border border-white/30 rounded-lg font-bold transition-all backdrop-blur-sm w-full sm:w-auto text-lg">
                       Create Account
                     </button>
                   </Link>
